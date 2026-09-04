@@ -1,0 +1,30 @@
+# Pastas de dependências (os maiores vilões)
+node_modules/
+bower_components/
+.venv/
+venv/
+env/
+ENV/
+
+# Arquivos locais de build e cache
+dist/
+build/
+.next/
+.nuxt/
+.cache/
+.pytest_cache/
+__pycache__/
+*.pyc
+
+# Controle de versão e logs
+.git
+.gitignore
+.dockerignore
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
