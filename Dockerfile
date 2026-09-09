@@ -5,7 +5,7 @@ WORKDIR /app
 #esse codigo vai copiar todos os arquivos 
 COPY . /app 
 #pra instalar as bibliotecas necessarios 
-RUN pip install --no-cache-dir streamlit pandas pillow 
+RUN pip install --no-cache-dir streamlit pandas pillow google-genai python-dotenv
 #pra expor a porta, padrao do steamlit
 EXPOSE 8501 
 #sempre que o docker inciar vai inicializar junto tudo isso
