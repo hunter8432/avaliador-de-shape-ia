@@ -1,35 +1,96 @@
 import streamlit as st
-import pandas as pd
 from PIL import Image
+from google import genai
+import os
+from dotenv import load_dotenv
 
-# Configuração da página
-st.set_page_config(page_title="Avaliador de Shape", page_icon="💪", layout="centered")
+load_dotenv()
+
+st.set_page_config(
+    page_title="Avaliador de Shape",
+    page_icon="💪",
+    layout="centered"
+)
+
 st.title("💪 Avaliador de Shape com Inteligência Artificial")
 
-st.markdown("""
-Bem-vindo ao protótipo do avaliador de shape. 
-Como profissional de DevOps, este app será o nosso laboratório de testes!
-""")
+api_key = os.getenv("GEMINI_API_KEY")
 
-# --- CAMPO DE UPLOAD DA FOTO ---
+if not api_key:
+    api_key = st.text_input(
+        "Insira sua Gemini API Key:",
+        type="password"
+    ).strip()
+
+if api_key:
+    client = genai.Client(api_key=api_key)
+else:
+    st.warning("⚠️ Configure sua GEMINI_API_KEY.")
+
 st.subheader("📸 Envie a foto do seu Shape")
-foto_enviada = st.file_uploader("Escolha uma imagem (JPG, PNG)", type=["jpg", "jpeg", "png"])
+
+foto_enviada = st.file_uploader(
+    "Escolha uma imagem",
+    type=["jpg", "jpeg", "png"]
+)
 
 if foto_enviada is not None:
-    # Abre e exibe a imagem na tela
+
     imagem = Image.open(foto_enviada)
-    st.image(imagem, caption="Foto carregada com sucesso!", use_container_width=True)
-    
-    # Botão para simular a análise da IA
-    if st.button("🚀 Analisar Shape com IA"):
-        with st.spinner("A IA está analisando sua simetria e proporções..."):
-            # Aqui no futuro entrará a chamada da API da IA (OpenAI/Gemini)
-            # Por enquanto, colocamos uma resposta estática (Mock) para testar o fluxo
-            st.success("Análise concluída!")
-            st.subheader("📝 Relatório da IA (Simulação)")
-            st.write("- **Proporção Ombro/Cintura:** Excelente estética em V.")
-            st.write("- **Estimativa de BF (Gordura):** Cerca de 12-14%.")
-            st.write("- **Ponto Forte:** Deltoides (ombros) bem desenvolvidos.")
-            st.write("- **Foco de Treino:** Sugerido maior volume em membros inferiores.")
+
+    st.image(
+        imagem,
+        caption="Foto carregada com sucesso!",
+        use_container_width=True
+    )
+
+    if st.button("🚀 Analisar Shape com IA Real"):
+
+        if not api_key:
+            st.error("Por favor, insira uma API Key.")
+        else:
+
+            with st.spinner("O Gemini está analisando..."):
+
+                try:
+
+                    prompt = """
+                    Você é um especialista em fisiculturismo,
+                    biomecânica e avaliação estética desportiva.
+
+                    Analise a foto fornecida e retorne um relatório
+                    estruturado em Markdown com:
+
+                    1. Estimativa visual do percentual de gordura corporal.
+                    2. Avaliação de simetria e proporção muscular.
+                    3. Principais pontos fortes estéticos visíveis.
+                    4. Grupos musculares que poderiam receber maior foco.
+
+                    Seja profissional, motivador e técnico.
+                    Deixe claro que a estimativa de percentual de gordura
+                    é apenas visual e não uma medição clínica.
+                    """
+
+# Como deve ficar:
+                    resposta = client.models.generate_content(
+        model="gemini-3.6-flash",
+        contents=[prompt, imagem]
+    )
+
+
+                    st.success("Análise concluída!")
+
+                    st.subheader("📝 Relatório da IA")
+
+                    st.markdown(resposta.text)
+
+                except Exception as e:
+    # Se der erro de alta demanda, avisa amigavelmente para clicar de novo
+                    if "503" in str(e):
+                        st.error("⚠️ Os servidores do Google estão lotados agora (Erro 503). Por favor, clique no botão novamente para tentar uma nova requisição.")
+                    else:
+                        st.error(f"Erro ao chamar a API do Gemini: {e}")
+
 else:
-    st.info("Aguardando o envio de uma foto para iniciar a análise.")
+
+    st.info("Aguardando o envio de uma foto.")
