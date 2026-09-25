@@ -29,3 +29,5 @@ jobs:
 
       - name: Rodar testes
         run: pytest
+        env:
+          PYTHONPATH: ${{ github.workspace }}
