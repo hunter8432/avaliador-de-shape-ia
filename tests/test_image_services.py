@@ -36,9 +36,11 @@ def test_optimize_image_keeps_rgb():
     assert result.mode == "RGB"
 def test_optimize_image_does_not_modify_original():
     image = Image.new("RGB", (2000, 1500))
-    
+
     original_size = image.size
-    
+
+    optimize_image(image)
+
     assert image.size == original_size
 
 def test_optimize_image_preserves_aspect_ratio():
