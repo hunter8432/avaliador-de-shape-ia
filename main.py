@@ -15,7 +15,7 @@ st.set_page_config(
     layout="centered"
 )
 
-st.title("💪 Avaliador de Shape com Inteligência Artificial")
+st.title("💪 Avaliador de Shape com IA")
 
 
 api_key = get_api_key_input(get_gemini_api_key())
